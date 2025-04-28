@@ -155,6 +155,17 @@ const Navbar = () => {
                   <li>
                     <button
                       className="block text-gray-700 font-medium px-3 py-2 text-sm w-full text-left hover:bg-gray-200"
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        navigate("/my-saved-insights");
+                      }}
+                    >
+                      My Saved Insights
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="block text-gray-700 font-medium px-3 py-2 text-sm w-full text-left hover:bg-gray-200"
                       onClick={handleLogout}
                     >
                       Logout

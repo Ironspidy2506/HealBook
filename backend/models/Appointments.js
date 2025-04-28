@@ -45,6 +45,10 @@ const appointmentSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  prescriptionAdded: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const appointmentModel =

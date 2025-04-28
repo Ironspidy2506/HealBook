@@ -13,6 +13,7 @@ import Footer from "./components/Footer.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx"; // Import ScrollToTop
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import MySavedInsights from "./pages/MySavedInsights.jsx";
 
 const App = () => {
   return (
@@ -29,6 +30,7 @@ const App = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/my-profile" element={<MyProfile />} />
         <Route path="/my-appointments" element={<MyAppointments />} />
+        <Route path="/my-saved-insights" element={<MySavedInsights />} />
         <Route path="/appointment/:docId" element={<Appointment />} />
       </Routes>
       <Footer />

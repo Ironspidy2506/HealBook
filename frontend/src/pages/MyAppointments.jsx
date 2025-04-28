@@ -5,12 +5,12 @@ import { toast } from "react-toastify";
 
 const MyAppointments = () => {
   const { token, getDoctorsData } = useContext(AppContext);
-  const [appointments, setAppointments] = useState([]); // Properly initialize state
+  const [appointments, setAppointments] = useState([]);
   const [selectedPrescription, setSelectedPrescription] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
   const openPrescription = (appointment) => {
-    setSelectedPrescription(appointment.prescription); // Assuming prescription is in the appointment
+    setSelectedPrescription(appointment.prescription);
     setShowModal(true);
   };
 
@@ -99,116 +99,124 @@ const MyAppointments = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
+      <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">
         My Appointments
       </h1>
 
-      {/* Check if there are appointments */}
       {appointments.length === 0 ? (
         <p className="text-center text-gray-600">No appointments booked yet.</p>
       ) : (
-        <div className="grid gap-6">
-          {appointments.slice(0).map((item, index) => (
+        <div className="grid gap-8">
+          {appointments.map((item, index) => (
             <div
               key={index}
-              className="bg-white shadow-md rounded-lg p-4 flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-4 transition-transform hover:scale-105"
+              className="bg-white shadow-lg rounded-xl p-6 flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-6 transition-transform hover:scale-105"
             >
               {/* Doctor's Image */}
-              <div>
+              {/* Doctor's Image and Name */}
+              <div className="flex flex-col items-center">
                 <img
                   src={item.docData.image}
-                  alt={`${item.name}`}
-                  className="w-36 h-36 rounded-full border-2 border-gray-300 bg-blue-400"
+                  alt={item.docData.name}
+                  className="w-28 h-28 rounded-full object-cover border-4 border-indigo-100 bg-blue-400"
                 />
+                <p className="mt-2 text-lg font-semibold text-blue-500 text-center">
+                  {item.docData.name}
+                </p>
               </div>
 
               {/* Doctor's Details */}
-              <div className="flex-1">
-                <p className="text-xl font-semibold text-gray-800">
-                  {item.name}
-                </p>
-                <p className="text-gray-600 mb-2">{item.speciality}</p>
-                <p className="font-medium text-gray-700">Address:</p>
-                <p className="text-gray-700 font-medium">
-                  <span>Date & Time: </span>
-                  <span className="font-normal text-gray-600">
-                    {formatDate(item.slotDate)} | {item.slotTime}
-                  </span>
-                </p>
-              </div>
+              <div className="flex-1 w-full">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-xl font-bold text-gray-900">
+                      {item.name}
+                    </p>
+                    <p className="text-gray-500">{item.speciality}</p>
+                    <p className="text-gray-600 mt-1">
+                    <span className="font-semibold">Address: </span> {item.docData.address}
+                    </p>
+                  </div>
+                  <div className="mt-4 sm:mt-0">
+                    <p className="text-gray-600">
+                      <span className="font-semibold">Date & Time: </span>
+                      {formatDate(item.slotDate)} | {item.slotTime}
+                    </p>
+                  </div>
+                </div>
 
-              {/* Action Buttons or Appointment Status */}
-              <div className="flex flex-col items-center gap-2 mt-4 sm:mt-0">
-                {item.cancelled ? (
-                  <p className="text-red-500 text-lg font-bold">
-                    Appointment Cancelled
-                  </p>
-                ) : item.isCompleted ? (
-                  <p className="text-green-500 text-lg font-bold">
-                    Appointment Completed
-                  </p>
-                ) : (
-                  <div className="flex flex-col lg:flex-row gap-2">
-                    <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                {/* Appointment Status */}
+                <div className="mt-4 flex items-center space-x-2">
+                  {item.cancelled ? (
+                    <span className="px-3 py-1 bg-red-100 text-red-600 rounded-full text-sm font-medium">
+                      Cancelled
+                    </span>
+                  ) : item.isCompleted ? (
+                    <span className="px-3 py-1 bg-green-100 text-green-600 rounded-full text-sm font-medium">
+                      Completed
+                    </span>
+                  ) : (
+                    <span className="px-3 py-1 bg-yellow-100 text-yellow-600 rounded-full text-sm font-medium">
+                      Upcoming
+                    </span>
+                  )}
+                </div>
+
+                {/* Action Buttons */}
+                {!item.cancelled && (
+                  <div className="flex flex-wrap gap-4 mt-6">
+                    <button className="px-5 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm transition">
                       Pay Online
                     </button>
                     <button
                       onClick={() => cancelAppointment(item._id)}
-                      className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                      className="px-5 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm transition"
                     >
                       Cancel Appointment
                     </button>
-                  </div>
-                )}
-
-                {/* Get Prescription button - always visible if appointment is not cancelled */}
-                {!item.cancelled && (
-                  <button
-                    className="mt-2 px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600"
-                    onClick={() => openPrescription(item)}
-                  >
-                    Get Prescription
-                  </button>
-                )}
-
-                {showModal && (
-                  <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm backdrop-brightness-80 z-50">
-                    <div className="bg-white p-6 rounded-lg max-w-lg w-full relative shadow-lg">
-                      <button
-                        onClick={() => setShowModal(false)}
-                        className="absolute top-2 right-2 text-gray-600 hover:text-gray-900 text-xl"
-                      >
-                        &times;
-                      </button>
-                      <h2 className="text-xl font-bold mb-4 text-center text-indigo-600">
-                        Doctor's Prescription
-                      </h2>
-                      <div className="flex justify-center">
-                        {selectedPrescription ? (
-                          <p className="text-gray-700 whitespace-pre-line">
-                            {selectedPrescription}
-                          </p>
-                        ) : (
-                          <p className="text-gray-500">
-                            No prescription provided yet.
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="flex justify-center">
-                        <button
-                          onClick={() => console.log("Get Insights Clicked")}
-                          className="mt-4 px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 w-full max-w-xs"
-                        >
-                          Get Insights
-                        </button>
-                      </div>
-                    </div>
+                    <button
+                      onClick={() => openPrescription(item)}
+                      className="px-5 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-sm transition"
+                    >
+                      Get Prescription
+                    </button>
                   </div>
                 )}
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm backdrop-brightness-90 z-50">
+          <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md relative">
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl"
+            >
+              &times;
+            </button>
+            <h2 className="text-2xl font-bold text-center text-indigo-600 mb-6">
+              Doctor's Prescription
+            </h2>
+            <div className="text-gray-700 whitespace-pre-line text-center min-h-[100px]">
+              {selectedPrescription ? (
+                selectedPrescription
+              ) : (
+                <p className="text-gray-500">No prescription provided yet.</p>
+              )}
+            </div>
+            <div className="flex justify-center">
+              <button
+                onClick={() => console.log("Get Insights Clicked")}
+                className="mt-6 px-6 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg text-sm transition w-full max-w-xs"
+              >
+                Get Insights
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
