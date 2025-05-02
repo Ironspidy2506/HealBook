@@ -1,30 +1,21 @@
-import OpenAI from "openai";
+import { GoogleGenAI } from "@google/genai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+const ai = new GoogleGenAI({
+  apiKey: process.env.GOOGLE_API_KEY, // Replace with env var in production
 });
 
 export const getAiInsights = async (req, res) => {
   const { prompt } = req.body;
 
-  if (!prompt) {
-    return res
-      .status(400)
-      .json({ success: false, message: "No prompt provided" });
-  }
-
   try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: [{ role: "user", content: prompt }],
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: prompt,
     });
 
-    res.json({
-      success: true,
-      insights: response.choices[0].message.content,
-    });
-  } catch (error) {
-    console.error("AI error:", error.message);
-    res.status(500).json({ success: false, message: "AI request failed" });
+    res.json({ success: true, insights: response.text });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Failed to get insights" });
   }
 };

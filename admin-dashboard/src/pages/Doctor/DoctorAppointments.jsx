@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useState } from "react";
 import { DoctorContext } from "../../context/DoctorContext.jsx";
 import { AppContext } from "../../context/AppContext.jsx";
 import { assets } from "../../assets/assets.js";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const DoctorAppointments = () => {
   const {
@@ -13,6 +15,8 @@ const DoctorAppointments = () => {
   } = useContext(DoctorContext);
 
   const { calculateAge, formatDate } = useContext(AppContext);
+
+  const [isEditing, setIsEditing] = useState(false);
 
   // Modal related states
   const [showModal, setShowModal] = useState(false);
@@ -33,6 +37,7 @@ const DoctorAppointments = () => {
 
   const openPrescriptionModal = (appointment) => {
     setSelectedAppointment(appointment);
+    setIsEditing(false);
     setShowModal(true);
   };
 
@@ -82,21 +87,79 @@ const DoctorAppointments = () => {
     setReports(updatedReports);
   };
 
-  const handleSubmitPrescription = () => {
-    const prescriptionData = {
-      appointmentId: selectedAppointment._id,
-      doctorId: selectedAppointment.docData._id,
-      patientId: selectedAppointment.userData._id,
-      disease,
-      medicines,
-      reports,
-      additionalNotes,
-    };
+  const handleSubmitPrescription = async () => {
+    try {
+      const prescriptionData = {
+        appointmentId: selectedAppointment._id,
+        doctorId: selectedAppointment.docData._id,
+        patientId: selectedAppointment.userData._id,
+        disease,
+        medicines,
+        reports,
+        additionalNotes,
+      };
 
-    console.log("Prescription Saved:", prescriptionData);
+      const url = isEditing
+        ? `http://localhost:5000/api/prescription/edit-prescription/${prescriptionData.appointmentId}`
+        : "http://localhost:5000/api/prescription/add-prescription";
 
-    // TODO: send to backend API here...
-    // closePrescriptionModal();
+      const { data } = await axios.post(url, prescriptionData, {
+        headers: { dtoken },
+      });
+
+      if (data.success) {
+        toast.success(data.message);
+        closePrescriptionModal();
+        getAppointments(); // refresh appointments
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const fetchPrescription = async (appointmentId) => {
+    try {
+      const { data } = await axios.get(
+        `http://localhost:5000/api/prescription/get-prescription-by-appointmentId/${appointmentId}`,
+      );
+
+      if (data.success) {
+        const { disease, medicines, reports, additionalNotes } =
+          data.prescription;
+        setDisease(disease);
+        setMedicines(medicines);
+        setReports(reports);
+        setAdditionalNotes(additionalNotes);
+        setIsEditing(true); // enable edit mode
+        setShowModal(true);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (err) {
+      toast.error("Failed to fetch prescription");
+    }
+  };
+
+  const deletePrescription = async (appointmentId) => {
+    try {
+      const { data } = await axios.delete(
+        `http://localhost:5000/api/prescription/delete-prescription/${appointmentId}`,
+        {
+          headers: { dtoken },
+        }
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+        getAppointments(); // Refresh the appointment list
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error("Failed to delete prescription");
+    }
   };
 
   return (
@@ -165,14 +228,34 @@ const DoctorAppointments = () => {
                 <div className="text-blue-500 font-bold">${item.amount}</div>
 
                 {/* Prescription Button */}
-                <div>
-                  <button
-                    onClick={() => openPrescriptionModal(item)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
-                  >
-                    Add Prescription
-                  </button>
-                </div>
+                {!item.prescriptionAdded ? (
+                  <div>
+                    <button
+                      onClick={() => openPrescriptionModal(item)}
+                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+                    >
+                      Add Prescription
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col sm:flex-row gap-3 mt-4 justify-center items-center">
+                    <button
+                      onClick={() => {
+                        setSelectedAppointment(item);
+                        fetchPrescription(item._id);
+                      }}
+                      className="w-full sm:w-auto bg-yellow-500 text-white font-semibold px-5 py-2 rounded-lg shadow hover:bg-yellow-600 transition duration-200"
+                    >
+                      ✏️ Edit
+                    </button>
+                    <button
+                      onClick={() => deletePrescription(item._id)}
+                      className="w-full sm:w-auto bg-red-500 text-white font-semibold px-5 py-2 rounded-lg shadow hover:bg-red-600 transition duration-200"
+                    >
+                      🗑️ Delete
+                    </button>
+                  </div>
+                )}
 
                 {/* Actions */}
                 <div className="flex flex-row justify-center items-center">
@@ -216,7 +299,7 @@ const DoctorAppointments = () => {
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-full max-w-2xl relative max-h-[90vh] overflow-y-auto flex flex-col gap-4">
             <h2 className="text-xl font-bold mb-4 text-blue-500 text-center">
-              Add Prescription
+              {isEditing ? "Edit Prescription" : "Add Prescription"}
             </h2>
 
             {/* Disease Input */}
@@ -243,68 +326,85 @@ const DoctorAppointments = () => {
                     Medicine {index + 1}
                   </label>
                   {/* Medicine Name */}
-                  <input
-                    type="text"
-                    value={medicine.name}
-                    onChange={(e) =>
-                      handleMedicineChange(index, "name", e.target.value)
-                    }
-                    placeholder="Medicine Name"
-                    className="border border-gray-300 rounded px-2 py-1 focus:outline-none w-full"
-                  />
+                  <div className="flex flex-col gap-1 w-full">
+                    <label className="text-gray-600 text-sm">
+                      Medicine Name
+                    </label>
+                    <input
+                      type="text"
+                      value={medicine.name}
+                      onChange={(e) =>
+                        handleMedicineChange(index, "name", e.target.value)
+                      }
+                      placeholder="Enter medicine name"
+                      className="border border-gray-300 rounded px-2 py-1 focus:outline-none w-full"
+                    />
+                  </div>
 
                   {/* Dosage */}
-                  <input
-                    type="text"
-                    value={medicine.dosage}
-                    onChange={(e) =>
-                      handleMedicineChange(index, "dosage", e.target.value)
-                    }
-                    placeholder="Dosage (e.g., 500mg)"
-                    className="border border-gray-300 rounded px-2 py-1 focus:outline-none w-full"
-                  />
+                  <div className="flex flex-col gap-1 w-full">
+                    <label className="text-gray-600 text-sm">Dosage</label>
+                    <input
+                      type="text"
+                      value={medicine.dosage}
+                      onChange={(e) =>
+                        handleMedicineChange(index, "dosage", e.target.value)
+                      }
+                      placeholder="Dosage (e.g., 500mg)"
+                      className="border border-gray-300 rounded px-2 py-1 focus:outline-none w-full"
+                    />
+                  </div>
 
                   {/* Frequency */}
-                  <div className="flex flex-wrap gap-4 mt-2">
-                    {["Morning", "Lunch", "Evening", "Night"].map((time) => (
-                      <label key={time} className="flex items-center gap-1">
-                        <input
-                          type="checkbox"
-                          value={time}
-                          checked={medicine.frequency?.includes(time)}
-                          onChange={(e) => {
-                            const updatedMedicines = [...medicines];
-                            const selected =
-                              updatedMedicines[index].frequency || [];
+                  <div className="flex flex-col gap-2 w-full">
+                    <label className="text-gray-600 text-sm">Frequency</label>
+                    <div className="flex flex-wrap gap-4">
+                      {["Morning", "Lunch", "Evening", "Night"].map((time) => (
+                        <label
+                          key={time}
+                          className="flex items-center gap-1 text-gray-700"
+                        >
+                          <input
+                            type="checkbox"
+                            value={time}
+                            checked={medicine.frequency?.includes(time)}
+                            onChange={(e) => {
+                              const updatedMedicines = [...medicines];
+                              const selected =
+                                updatedMedicines[index].frequency || [];
 
-                            if (e.target.checked) {
-                              updatedMedicines[index].frequency = [
-                                ...selected,
-                                time,
-                              ];
-                            } else {
-                              updatedMedicines[index].frequency =
-                                selected.filter((t) => t !== time);
-                            }
-                            setMedicines(updatedMedicines);
-                          }}
-                          className="accent-blue-500"
-                        />
-                        <span className="text-gray-700">{time}</span>
-                      </label>
-                    ))}
+                              if (e.target.checked) {
+                                updatedMedicines[index].frequency = [
+                                  ...selected,
+                                  time,
+                                ];
+                              } else {
+                                updatedMedicines[index].frequency =
+                                  selected.filter((t) => t !== time);
+                              }
+                              setMedicines(updatedMedicines);
+                            }}
+                            className="accent-blue-500"
+                          />
+                          {time}
+                        </label>
+                      ))}
+                    </div>
                   </div>
 
                   {/* Duration */}
-                  <input
-                    type="text"
-                    value={medicine.duration}
-                    onChange={(e) =>
-                      handleMedicineChange(index, "duration", e.target.value)
-                    }
-                    placeholder="Duration (e.g., 5 days)"
-                    className="border border-gray-300 rounded px-2 py-1 focus:outline-none w-full"
-                  />
+                  <div className="flex flex-col gap-1 w-full">
+                    <label className="text-gray-600 text-sm">Duration</label>
+                    <input
+                      type="text"
+                      value={medicine.duration}
+                      onChange={(e) =>
+                        handleMedicineChange(index, "duration", e.target.value)
+                      }
+                      placeholder="Duration (e.g., 5 days)"
+                      className="border border-gray-300 rounded px-2 py-1 focus:outline-none w-full"
+                    />
+                  </div>
 
                   {/* ❌ Remove Button at bottom-right */}
                   <div className="flex justify-end mt-4">
