@@ -39,7 +39,7 @@ const AddDoctor = () => {
       formData.append("about", about);
 
       const { data } = await axios.post(
-        `http://localhost:5000/api/admin/add-doctor`,
+        `https://heal-book-backend.vercel.app/api/admin/add-doctor`,
         formData,
         {
           headers: { atoken },

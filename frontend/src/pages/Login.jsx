@@ -22,7 +22,7 @@ const Login = () => {
     try {
       if (state === "Sign Up") {
         const { data } = await axios.post(
-          `http://localhost:5000/api/user/register`,
+          `https://heal-book-backend.vercel.app/api/user/register`,
           { name, email, password }
         );
         if (data.success) {
@@ -34,7 +34,7 @@ const Login = () => {
         }
       } else {
         const { data } = await axios.post(
-          `http://localhost:5000/api/user/login`,
+          `https://heal-book-backend.vercel.app/api/user/login`,
           { email, password }
         );
         if (data.success) {

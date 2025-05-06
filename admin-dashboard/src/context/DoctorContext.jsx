@@ -15,7 +15,7 @@ const DoctorContextProvider = (props) => {
   const getAppointments = async () => {
     try {
       const { data } = await axios.get(
-        `http://localhost:5000/api/doctor/appointments`,
+        `https://heal-book-backend.vercel.app/api/doctor/appointments`,
         {
           headers: { dtoken },
         }
@@ -35,7 +35,7 @@ const DoctorContextProvider = (props) => {
   const completeAppointment = async (appointmentId) => {
     try {
       const { data } = await axios.post(
-        "http://localhost:5000/api/doctor/complete-appointment",
+        "https://heal-book-backend.vercel.app/api/doctor/complete-appointment",
         { appointmentId },
         {
           headers: {
@@ -60,7 +60,7 @@ const DoctorContextProvider = (props) => {
   const cancelAppointment = async (appointmentId) => {
     try {
       const { data } = await axios.post(
-        "http://localhost:5000/api/doctor/cancel-appointment",
+        "https://heal-book-backend.vercel.app/api/doctor/cancel-appointment",
         { appointmentId },
         {
           headers: {
@@ -85,7 +85,7 @@ const DoctorContextProvider = (props) => {
   const getDashboard = async (appointmentId) => {
     try {
       const { data } = await axios.get(
-        "http://localhost:5000/api/doctor/dashboard",
+        "https://heal-book-backend.vercel.app/api/doctor/dashboard",
         {
           headers: {
             dtoken,
@@ -107,7 +107,7 @@ const DoctorContextProvider = (props) => {
   const getProfileData = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:5000/api/doctor/doctor-profile",
+        "https://heal-book-backend.vercel.app/api/doctor/doctor-profile",
         { headers: { dtoken } }
       );
       

@@ -100,8 +100,8 @@ const DoctorAppointments = () => {
       };
 
       const url = isEditing
-        ? `http://localhost:5000/api/prescription/edit-prescription/${prescriptionData.appointmentId}`
-        : "http://localhost:5000/api/prescription/add-prescription";
+        ? `https://heal-book-backend.vercel.app/api/prescription/edit-prescription/${prescriptionData.appointmentId}`
+        : "https://heal-book-backend.vercel.app/api/prescription/add-prescription";
 
       const { data } = await axios.post(url, prescriptionData, {
         headers: { dtoken },
@@ -122,7 +122,7 @@ const DoctorAppointments = () => {
   const fetchPrescription = async (appointmentId) => {
     try {
       const { data } = await axios.get(
-        `http://localhost:5000/api/prescription/get-prescription-by-appointmentId/${appointmentId}`,
+        `https://heal-book-backend.vercel.app/api/prescription/get-prescription-by-appointmentId/${appointmentId}`,
       );
 
       if (data.success) {
@@ -145,7 +145,7 @@ const DoctorAppointments = () => {
   const deletePrescription = async (appointmentId) => {
     try {
       const { data } = await axios.delete(
-        `http://localhost:5000/api/prescription/delete-prescription/${appointmentId}`,
+        `https://heal-book-backend.vercel.app/api/prescription/delete-prescription/${appointmentId}`,
         {
           headers: { dtoken },
         }

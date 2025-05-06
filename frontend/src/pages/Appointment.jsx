@@ -165,7 +165,7 @@ const Appointment = () => {
 
       // API call
       const { data } = await axios.post(
-        "http://localhost:5000/api/user/book-appointment",
+        "https://heal-book-backend.vercel.app/api/user/book-appointment",
         { docId, slotDate: formattedDate, slotTime: selectedTime },
         {
           headers: {

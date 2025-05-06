@@ -24,7 +24,7 @@ const DoctorProfile = () => {
       };
 
       const { data } = await axios.post(
-        "http://localhost:5000/api/doctor/update-profile",
+        "https://heal-book-backend.vercel.app/api/doctor/update-profile",
         updatedProfile,
         { headers: { dtoken } }
       );

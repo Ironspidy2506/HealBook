@@ -22,7 +22,7 @@ const MyAppointments = () => {
   const getUserAppointments = async () => {
     try {
       const { data } = await axios.get(
-        `http://localhost:5000/api/user/appointments`,
+        `https://heal-book-backend.vercel.app/api/user/appointments`,
         {
           headers: { token },
         }
@@ -48,7 +48,7 @@ const MyAppointments = () => {
   const cancelAppointment = async (appointmentId) => {
     try {
       const { data } = await axios.post(
-        `http://localhost:5000/api/user/cancel-appointment`,
+        `https://heal-book-backend.vercel.app/api/user/cancel-appointment`,
         { appointmentId },
         {
           headers: { token },
@@ -105,7 +105,7 @@ const MyAppointments = () => {
   const fetchPrescription = async (appointmentId) => {
     try {
       const { data } = await axios.get(
-        `http://localhost:5000/api/prescription/get-prescription-by-appointmentId/${appointmentId}`
+        `https://heal-book-backend.vercel.app/api/prescription/get-prescription-by-appointmentId/${appointmentId}`
       );
 
       if (data.success) {
@@ -172,7 +172,7 @@ Diet Recommendations:
 
     try {
       const { data } = await axios.post(
-        "http://localhost:5000/api/ai/get-insights",
+        "https://heal-book-backend.vercel.app/api/ai/get-insights",
         {
           prompt,
         },
@@ -208,7 +208,7 @@ Diet Recommendations:
 
     try {
       const { data } = await axios.post(
-        "http://localhost:5000/api/insights/save-insights",
+        "https://heal-book-backend.vercel.app/api/insights/save-insights",
         {
           appointmentId: selectedPrescription.appointmentId,
           insights,

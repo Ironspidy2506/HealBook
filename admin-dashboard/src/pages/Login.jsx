@@ -17,7 +17,7 @@ const Login = () => {
     try {
       if (state === "Admin") {
         const { data } = await axios.post(
-          `http://localhost:5000/api/admin/login`,
+          `https://heal-book-backend.vercel.app/api/admin/login`,
           {
             email,
             password,
@@ -32,7 +32,7 @@ const Login = () => {
         }
       } else {
         const { data } = await axios.post(
-          `http://localhost:5000/api/doctor/login`,
+          `https://heal-book-backend.vercel.app/api/doctor/login`,
           {
             email,
             password,

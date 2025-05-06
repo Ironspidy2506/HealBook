@@ -23,7 +23,7 @@ const MyProfile = () => {
       }
 
       const { data } = await axios.post(
-        "http://localhost:5000/api/user/update-profile",
+        "https://heal-book-backend.vercel.app/api/user/update-profile",
         formData,
         {
           headers: {

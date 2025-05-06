@@ -9,7 +9,7 @@ const MySavedInsights = () => {
   const fetchSavedInsights = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:5000/api/insights/get-user-insights",
+        "https://heal-book-backend.vercel.app/api/insights/get-user-insights",
         {
           headers: { token },
         }

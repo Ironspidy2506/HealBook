@@ -16,7 +16,7 @@ const AppContextProvider = (props) => {
 
   const getDoctorsData = async () => {
     try {
-      const { data } = await axios.get(`http://localhost:5000/api/doctor/list`);
+      const { data } = await axios.get(`https://heal-book-backend.vercel.app/api/doctor/list`);
 
       if (data.success) {
         setDoctors(data.doctors);
@@ -32,7 +32,7 @@ const AppContextProvider = (props) => {
   const getUserProfileData = async () => {
     try {
       const { data } = await axios.get(
-        `http://localhost:5000/api/user/get-profile`,
+        `https://heal-book-backend.vercel.app/api/user/get-profile`,
         {
           headers: { token },
         }
