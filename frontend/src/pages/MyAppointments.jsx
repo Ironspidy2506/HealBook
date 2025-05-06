@@ -109,6 +109,10 @@ const MyAppointments = () => {
       );
 
       if (data.success) {
+        setSelectedPrescription({
+          appointmentId,
+          ...data.prescription,
+        });
         const { disease, medicines, reports, additionalNotes } =
           data.prescription;
         setDisease(disease);
@@ -191,18 +195,43 @@ Diet Recommendations:
     }
   };
 
-  const saveInsights = () => {
-    if (insights) {
-      localStorage.setItem("savedInsights", insights); // Save to localStorage or you can use an API
-      toast.success("Insights saved successfully!");
-    } else {
+  const saveInsights = async () => {
+    if (!insights) {
       toast.error("No insights to save.");
+      return;
+    }
+
+    if (!selectedPrescription || !selectedPrescription.appointmentId) {
+      toast.error("Missing appointment ID.");
+      return;
+    }
+
+    try {
+      const { data } = await axios.post(
+        "http://localhost:5000/api/insights/save-insights",
+        {
+          appointmentId: selectedPrescription.appointmentId,
+          insights,
+        },
+        {
+          headers: { token },
+        }
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Error saving insights.");
     }
   };
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">
+      <h1 className="text-3xl font-bold text-center text-blue-600 mb-8">
         My Appointments
       </h1>
 

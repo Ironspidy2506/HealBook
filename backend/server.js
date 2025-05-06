@@ -8,6 +8,7 @@ import adminRouter from "./routes/adminRoute.js";
 import doctorRouter from "./routes/doctorRoute.js";
 import userRouter from "./routes/userRoute.js";
 import prescriptionRouter from "./routes/prescriptionRoute.js";
+import insightRouter from "./routes/insightRoute.js";
 
 // App Config
 const app = express();
@@ -24,6 +25,7 @@ app.use("/api/ai", aiRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/doctor", doctorRouter);
 app.use("/api/prescription", prescriptionRouter);
+app.use("/api/insights", insightRouter);
 app.use("/api/user", userRouter);
 
 app.get("/", (req, res) => {

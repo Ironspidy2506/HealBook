@@ -16,6 +16,6 @@ export const getAiInsights = async (req, res) => {
     res.json({ success: true, insights: response.text });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, message: "Failed to get insights" });
+    res.json({ success: false, message: "Failed to get insights" });
   }
 };

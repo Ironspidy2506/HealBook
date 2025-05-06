@@ -4,17 +4,17 @@ const prescriptionSchema = new mongoose.Schema(
   {
     appointmentId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Appointment",
+      ref: "appointment",
       required: true,
     },
     doctorId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Doctor",
+      ref: "doctor",
       required: true,
     },
     patientId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "user",
       required: true,
     },
     disease: {
