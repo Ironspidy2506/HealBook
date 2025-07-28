@@ -24,10 +24,7 @@
 - [🔧 API Endpoints](#-api-endpoints)
 - [👥 User Roles](#-user-roles)
 - [🤖 AI Integration](#-ai-integration)
-- [💳 Payment Integration](#-payment-integration)
-- [📱 Screenshots](#-screenshots)
-- [🤝 Contributing](#-contributing)
-- [📄 License](#-license)
+- [🔮 Future Features](#-future-features)
 
 ---
 
